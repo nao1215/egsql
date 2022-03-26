@@ -1,8 +1,15 @@
 package dbms
 
-import "fmt"
+// EgSQLDB is the kernel of the DB management system.
+type EgSQLDB struct {
+}
 
-// DBMS print "Dummy function"
-func DBMS() {
-	fmt.Println("Dummy function")
+// NewEgSQLDB return EgSQLDB instance.
+func NewEgSQLDB() (*EgSQLDB, error) {
+	// [ENV]
+	// database name
+	// user name
+	// password
+	// EgSQL HOME directory path
+	return &EgSQLDB{}, nil
 }
