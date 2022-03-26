@@ -16,7 +16,6 @@ func (c *connector) Connect(ctx context.Context) (driver.Conn, error) {
 }
 
 // Driver implements driver.Connector interface.
-// Driver returns &MySQLDriver{}.
 func (c *connector) Driver() driver.Driver {
 	return &Driver{}
 }
