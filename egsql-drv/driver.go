@@ -1,4 +1,4 @@
-package dbms
+package egsql
 
 import "fmt"
 
