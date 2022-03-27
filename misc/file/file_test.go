@@ -29,7 +29,6 @@ func TestIsDir(t *testing.T) {
 	assert.Equal(t, true, IsDir("./testdata"))
 	assert.Equal(t, true, IsDir("/"))
 	assert.Equal(t, false, IsDir("abcdef"))
-	assert.Equal(t, true, IsDir("./testdata/NoWritableDir"))
 }
 
 func TestIsSymlink(t *testing.T) {
@@ -51,7 +50,6 @@ func TestIsReadable(t *testing.T) {
 	assert.Equal(t, true, IsReadable("./testdata/Readable.txt"))
 	assert.Equal(t, true, IsReadable("./testdata/symbolic.txt"))
 	assert.Equal(t, true, IsReadable("./testdata/"))
-	assert.Equal(t, false, IsReadable("./testdata/NonReadable.txt"))
 	assert.Equal(t, false, IsReadable("abcdef"))
 }
 
@@ -59,7 +57,6 @@ func TestIsWritable(t *testing.T) {
 	assert.Equal(t, true, IsWritable("./testdata/Writable.txt"))
 	assert.Equal(t, true, IsWritable("./testdata/symbolic.txt"))
 	assert.Equal(t, true, IsWritable("./testdata"))
-	assert.Equal(t, false, IsWritable("./testdata/NonWritable.txt"))
 	assert.Equal(t, false, IsWritable("abcdef"))
 }
 func TestIsExecutable(t *testing.T) {
