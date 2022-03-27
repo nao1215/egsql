@@ -1,6 +1,7 @@
 [![Build](https://github.com/nao1215/egsql/actions/workflows/build.yml/badge.svg)](https://github.com/nao1215/egsql/actions/workflows/build.yml)
 [![UnitTest](https://github.com/nao1215/egsql/actions/workflows/unit_test.yml/badge.svg)](https://github.com/nao1215/egsql/actions/workflows/unit_test.yml)
 [![reviewdog](https://github.com/nao1215/egsql/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/nao1215/egsql/actions/workflows/reviewdog.yml)
+[![codecov](https://codecov.io/gh/nao1215/egsql/branch/main/graph/badge.svg?token=eXJe7aqoCr)](https://codecov.io/gh/nao1215/egsql)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nao1215/egsql)](https://goreportcard.com/report/github.com/nao1215/egsql)
 ![GitHub](https://img.shields.io/github/license/nao1215/egsql)  
 # [WIP] egsql - Database management system to be embedded in the application
