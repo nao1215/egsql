@@ -1,24 +1,28 @@
 package egsql
 
-import "os"
+import (
+	"os"
+	"path/filepath"
+)
 
-type config struct{}
+type config struct {
+	homeDir string
+}
 
 const (
 	// EnvVarHome is environment variable that represents the egsql home directory.
 	EnvVarHome = "EGSQL_HOME"
 )
 
-func (c *config) home() {
+func (c *config) home() error {
 	home, ok := os.LookupEnv(EnvVarHome)
 	if !ok {
-		// default
-		home = ".bogo/"
-		if _, err := os.Stat(home); os.IsNotExist(err) {
-			err := os.Mkdir(home, 0777)
-			if err != nil {
-				panic(err)
-			}
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return ErrNoEgSQLHomeDir
 		}
+		home = filepath.Join(home, ".egsql")
 	}
+	c.homeDir = home
+	return nil
 }
