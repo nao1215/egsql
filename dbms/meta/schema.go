@@ -5,7 +5,7 @@ type DataType uint8
 
 const (
 	// Int is an Integer type.
-	Int DataType = iota
+	Int DataType = iota + 1
 	// Varchar is a CHARACTER VARYING type. It means a variable-length string.
 	Varchar
 )
@@ -72,6 +72,7 @@ func (s *Scheme) ConvertToTable() *Table {
 		var col Column
 		col.Name = s.ColumnNames[i]
 		col.Type = s.ColumnDataTypes[i]
+		col.Primary = (col.Name == s.PrimaryKey)
 		columns = append(columns, col)
 	}
 	t.Columns = columns
