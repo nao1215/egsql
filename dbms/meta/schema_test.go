@@ -79,7 +79,7 @@ func TestNewScheme(t *testing.T) {
 			args: args{
 				tableName:   "this_is_table_name",
 				columnNames: []string{"id", "user_id", "group_id", ""},
-				dataTypes:   []DataType{Int},
+				dataTypes:   []DataType{Int, Int, Int, Varchar},
 				pk:          "id",
 			},
 			want:      nil,
