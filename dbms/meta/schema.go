@@ -1,5 +1,7 @@
 package meta
 
+import "github.com/nao1215/egsql/misc/slice"
+
 // DataType is the data type of the table column. It is Enum.
 type DataType uint8
 
@@ -14,7 +16,7 @@ const (
 type Table struct {
 	// Name is DB table name.
 	Name string
-	// Columns is an array that holds everything involved in the table.
+	// Columns is an slice that holds everything involved in the table.
 	Columns []Column
 }
 
@@ -32,9 +34,9 @@ type Column struct {
 type Scheme struct {
 	// TableName is table name.
 	TableName string `json:"tableName"`
-	// ColumnNames is an array of all column names.
+	// ColumnNames is an slice of all column names.
 	ColumnNames []string `json:"columnNames"`
-	// ColumnDataTypes is an array of all column data type.
+	// ColumnDataTypes is an slice of all column data type.
 	ColumnDataTypes []DataType `json:"dataTypes"`
 	// PrimaryKey is primary key.
 	PrimaryKey string `json:"pk"`
@@ -60,6 +62,9 @@ func validColumn(columnNames []string, dataTypes []DataType) error {
 	}
 	if len(columnNames) != len(dataTypes) {
 		return ErrNotMatchColumnNum
+	}
+	if slice.Contains(columnNames, "") {
+		return ErrEmptyColumnName
 	}
 	return nil
 }

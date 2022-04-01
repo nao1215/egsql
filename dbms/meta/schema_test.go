@@ -39,7 +39,7 @@ func TestNewScheme(t *testing.T) {
 			wantErrIs: nil,
 		},
 		{
-			name: "[Error] Column name array is empty",
+			name: "[Error] Column name slice is empty",
 			args: args{
 				tableName:   "this_is_table_name",
 				columnNames: []string{},
@@ -51,7 +51,7 @@ func TestNewScheme(t *testing.T) {
 			wantErrIs: ErrColumnBelowMinNum,
 		},
 		{
-			name: "[Error] Column data type array is empty",
+			name: "[Error] Column data type slice is empty",
 			args: args{
 				tableName:   "this_is_table_name",
 				columnNames: []string{"id", "user_id", "group_id", "name"},
@@ -74,6 +74,18 @@ func TestNewScheme(t *testing.T) {
 			wantErr:   true,
 			wantErrIs: ErrNotMatchColumnNum,
 		},
+		{
+			name: "[Error] An empty string is specified in the column name.",
+			args: args{
+				tableName:   "this_is_table_name",
+				columnNames: []string{"id", "user_id", "group_id", ""},
+				dataTypes:   []DataType{Int},
+				pk:          "id",
+			},
+			want:      nil,
+			wantErr:   true,
+			wantErrIs: ErrEmptyColumnName,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -95,9 +107,10 @@ func Test_validColumn(t *testing.T) {
 		dataTypes   []DataType
 	}
 	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
+		name      string
+		args      args
+		wantErr   bool
+		wantErrIs error
 	}{
 		{
 			name: "[Success] valid ok",
@@ -105,28 +118,49 @@ func Test_validColumn(t *testing.T) {
 				columnNames: []string{"id", "user_id", "group_id", "name"},
 				dataTypes:   []DataType{Int, Int, Int, Varchar},
 			},
-			wantErr: false,
+			wantErr:   false,
+			wantErrIs: nil,
 		},
 		{
-			name: "[Error] Column name array is empty",
+			name: "[Error] Column name slice is empty",
 			args: args{
 				columnNames: []string{},
 				dataTypes:   []DataType{Int, Int, Int, Varchar},
 			},
-			wantErr: true,
+			wantErr:   true,
+			wantErrIs: ErrColumnBelowMinNum,
 		},
 		{
-			name: "[Error] Column data type array is empty",
+			name: "[Error] Column data type slice is empty",
 			args: args{
 				columnNames: []string{"id", "user_id", "group_id", "name"},
 				dataTypes:   []DataType{},
 			},
-			wantErr: true,
+			wantErr:   true,
+			wantErrIs: ErrColumnBelowMinNum,
+		},
+		{
+			name: "[Error] 'Number of column names' and 'Number of column types' do not match",
+			args: args{
+				columnNames: []string{"id", "user_id", "group_id", "name"},
+				dataTypes:   []DataType{Int},
+			},
+			wantErr:   true,
+			wantErrIs: ErrNotMatchColumnNum,
+		},
+		{
+			name: "[Error] An empty string is specified in the column name.",
+			args: args{
+				columnNames: []string{"id", "", "group_id", "name"},
+				dataTypes:   []DataType{Int},
+			},
+			wantErr:   true,
+			wantErrIs: ErrEmptyColumnName,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := validColumn(tt.args.columnNames, tt.args.dataTypes); (err != nil) != tt.wantErr {
+			if err := validColumn(tt.args.columnNames, tt.args.dataTypes); (err != nil) != tt.wantErr && !errors.Is(err, tt.wantErrIs) {
 				t.Errorf("validColumn() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
