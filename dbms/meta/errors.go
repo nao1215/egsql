@@ -9,4 +9,7 @@ var (
 	ErrColumnBelowMinNum = errors.New("Columns are below the minimum number")
 	// ErrEmptyColumnName means that use an empty ("") string for a column name.
 	ErrEmptyColumnName = errors.New("Column name is empty")
+	// ErrInvalidPrimaryKey means that the primary key is invalid.
+	// For example, if you specify a column name that does not exist.
+	ErrInvalidPrimaryKey = errors.New("Invalid primary key")
 )

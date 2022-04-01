@@ -86,6 +86,18 @@ func TestNewScheme(t *testing.T) {
 			wantErr:   true,
 			wantErrIs: ErrEmptyColumnName,
 		},
+		{
+			name: "[Error]  if you specify a column name that does not exist.",
+			args: args{
+				tableName:   "this_is_table_name",
+				columnNames: []string{"id", "user_id", "group_id", "name"},
+				dataTypes:   []DataType{Int, Int, Int, Varchar},
+				pk:          "not_exist_pk",
+			},
+			want:      nil,
+			wantErr:   true,
+			wantErrIs: ErrInvalidPrimaryKey,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -162,6 +174,45 @@ func Test_validColumn(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := validColumn(tt.args.columnNames, tt.args.dataTypes); (err != nil) != tt.wantErr && !errors.Is(err, tt.wantErrIs) {
 				t.Errorf("validColumn() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func Test_validPrimaryKey(t *testing.T) {
+	type args struct {
+		columnNames []string
+		pk          string
+	}
+	tests := []struct {
+		name      string
+		args      args
+		wantErr   bool
+		wantErrIs error
+	}{
+		{
+			name: "[Success] valid ok",
+			args: args{
+				columnNames: []string{"id", "user_id", "group_id", "name"},
+				pk:          "id",
+			},
+			wantErr:   false,
+			wantErrIs: nil,
+		},
+		{
+			name: "[Error] if you specify a column name that does not exist.",
+			args: args{
+				columnNames: []string{"id", "user_id", "group_id", "name"},
+				pk:          "not_exist_pk",
+			},
+			wantErr:   true,
+			wantErrIs: ErrInvalidPrimaryKey,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := validPrimaryKey(tt.args.columnNames, tt.args.pk); (err != nil) != tt.wantErr {
+				t.Errorf("validPrimaryKey() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

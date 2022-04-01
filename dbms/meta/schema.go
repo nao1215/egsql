@@ -47,6 +47,10 @@ func NewScheme(tableName string, columnNames []string, dataTypes []DataType, pk 
 	if err := validColumn(columnNames, dataTypes); err != nil {
 		return nil, err
 	}
+	if err := validPrimaryKey(columnNames, pk); err != nil {
+		return nil, err
+	}
+
 	return &Scheme{
 		TableName:       tableName,
 		ColumnNames:     columnNames,
@@ -65,6 +69,14 @@ func validColumn(columnNames []string, dataTypes []DataType) error {
 	}
 	if slice.Contains(columnNames, "") {
 		return ErrEmptyColumnName
+	}
+	return nil
+}
+
+// validPrimaryKey checks if the Primary Key specification is correct
+func validPrimaryKey(columnNames []string, pk string) error {
+	if !slice.Contains(columnNames, pk) {
+		return ErrInvalidPrimaryKey
 	}
 	return nil
 }
