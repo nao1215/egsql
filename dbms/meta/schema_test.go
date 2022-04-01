@@ -1,6 +1,7 @@
 package meta
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -14,9 +15,11 @@ func TestNewScheme(t *testing.T) {
 		pk          string
 	}
 	tests := []struct {
-		name string
-		args args
-		want *Scheme
+		name      string
+		args      args
+		want      *Scheme
+		wantErr   bool
+		wantErrIs error
 	}{
 		{
 			name: "[Success] generate new table",
@@ -32,13 +35,99 @@ func TestNewScheme(t *testing.T) {
 				ColumnDataTypes: []DataType{Int, Int, Int, Varchar},
 				PrimaryKey:      "id",
 			},
+			wantErr:   false,
+			wantErrIs: nil,
+		},
+		{
+			name: "[Error] Column name array is empty",
+			args: args{
+				tableName:   "this_is_table_name",
+				columnNames: []string{},
+				dataTypes:   []DataType{Int, Int, Int, Varchar},
+				pk:          "id",
+			},
+			want:      nil,
+			wantErr:   true,
+			wantErrIs: ErrColumnBelowMinNum,
+		},
+		{
+			name: "[Error] Column data type array is empty",
+			args: args{
+				tableName:   "this_is_table_name",
+				columnNames: []string{"id", "user_id", "group_id", "name"},
+				dataTypes:   []DataType{},
+				pk:          "id",
+			},
+			want:      nil,
+			wantErr:   true,
+			wantErrIs: ErrColumnBelowMinNum,
+		},
+		{
+			name: "[Error] 'Number of column names' and 'Number of column types' do not match",
+			args: args{
+				tableName:   "this_is_table_name",
+				columnNames: []string{"id", "user_id", "group_id", "name"},
+				dataTypes:   []DataType{Int},
+				pk:          "id",
+			},
+			want:      nil,
+			wantErr:   true,
+			wantErrIs: ErrNotMatchColumnNum,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := NewScheme(tt.args.tableName, tt.args.columnNames, tt.args.dataTypes, tt.args.pk)
+			got, err := NewScheme(tt.args.tableName, tt.args.columnNames, tt.args.dataTypes, tt.args.pk)
+			if (err != nil) != tt.wantErr && !errors.Is(err, tt.wantErrIs) {
+				t.Errorf("NewScheme() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
 			if diff := cmp.Diff(tt.want, got); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func Test_validColumn(t *testing.T) {
+	type args struct {
+		columnNames []string
+		dataTypes   []DataType
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "[Success] valid ok",
+			args: args{
+				columnNames: []string{"id", "user_id", "group_id", "name"},
+				dataTypes:   []DataType{Int, Int, Int, Varchar},
+			},
+			wantErr: false,
+		},
+		{
+			name: "[Error] Column name array is empty",
+			args: args{
+				columnNames: []string{},
+				dataTypes:   []DataType{Int, Int, Int, Varchar},
+			},
+			wantErr: true,
+		},
+		{
+			name: "[Error] Column data type array is empty",
+			args: args{
+				columnNames: []string{"id", "user_id", "group_id", "name"},
+				dataTypes:   []DataType{},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := validColumn(tt.args.columnNames, tt.args.dataTypes); (err != nil) != tt.wantErr {
+				t.Errorf("validColumn() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

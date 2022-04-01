@@ -41,13 +41,27 @@ type Scheme struct {
 }
 
 // NewScheme returns a pointer to the new schema.
-func NewScheme(tableName string, columnNames []string, dataTypes []DataType, pk string) *Scheme {
+func NewScheme(tableName string, columnNames []string, dataTypes []DataType, pk string) (*Scheme, error) {
+	if err := validColumn(columnNames, dataTypes); err != nil {
+		return nil, err
+	}
 	return &Scheme{
 		TableName:       tableName,
 		ColumnNames:     columnNames,
 		ColumnDataTypes: dataTypes,
 		PrimaryKey:      pk,
+	}, nil
+}
+
+// validColumn is the validation when initializing the schema.
+func validColumn(columnNames []string, dataTypes []DataType) error {
+	if len(columnNames) == 0 || len(dataTypes) == 0 {
+		return ErrColumnBelowMinNum
 	}
+	if len(columnNames) != len(dataTypes) {
+		return ErrNotMatchColumnNum
+	}
+	return nil
 }
 
 // String is stringer for DataType
