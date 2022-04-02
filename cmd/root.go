@@ -18,10 +18,6 @@ func exitError(msg interface{}) {
 
 // Execute start command.
 func Execute() {
-	rootCmd.Run = func(cmd *cobra.Command, args []string) {
-		_ = rootCmd.Help()
-	}
-
 	if err := rootCmd.Execute(); err != nil {
 		exitError(err)
 	}
