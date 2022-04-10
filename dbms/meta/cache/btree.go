@@ -29,8 +29,11 @@ type node struct {
 // items is the data that the node has.
 type items []Item
 
-// IntItem is item od int32
-type IntItem int32
+// Int32Item is item of int32
+type Int32Item int32
+
+// Int64Item is item of int64
+type Int64Item int64
 
 // Item must be comarable for b-tree implementation.
 type Item interface {
@@ -95,9 +98,18 @@ func (b *BTree) Len() int {
 	return b.Length
 }
 
-// Less returns true if IntItem i is less than the Item than passed in the argument.
-func (i IntItem) Less(than Item) bool {
-	v, ok := than.(IntItem)
+// Less returns true if Int32Item i is less than the Item than passed in the argument.
+func (i Int32Item) Less(than Item) bool {
+	v, ok := than.(Int32Item)
+	if !ok {
+		return false
+	}
+	return i < v
+}
+
+// Less returns true if Int64Item i is less than the Item than passed in the argument.
+func (i Int64Item) Less(than Item) bool {
+	v, ok := than.(Int64Item)
 	if !ok {
 		return false
 	}
@@ -105,15 +117,15 @@ func (i IntItem) Less(than Item) bool {
 }
 
 func (i items) MarshalJSON() ([]byte, error) {
-	var intItems []IntItem
+	var intItems []Int32Item
 	for _, item := range i {
-		intItems = append(intItems, item.(IntItem))
+		intItems = append(intItems, item.(Int32Item))
 	}
 	return json.Marshal(intItems)
 }
 
 func (i *items) UnmarshalJSON(b []byte) error {
-	var intItems []IntItem
+	var intItems []Int32Item
 	err := json.Unmarshal([]byte(b), &intItems)
 
 	for index, item := range intItems {
